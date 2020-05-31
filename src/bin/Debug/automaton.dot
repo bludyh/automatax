@@ -1,0 +1,15 @@
+digraph automaton {
+	rankdir=LR;
+	"" [shape=none]
+	"A1" [shape=circle]
+	"A2" [shape=doublecircle]
+	"A3" [shape=circle]
+
+	"" -> "A1"
+	"A1" -> "A2" [label="a"]
+	"A1" -> "A1" [label="b"]
+	"A2" -> "A3" [label="a"]
+	"A2" -> "A2" [label="b"]
+	"A3" -> "A2" [label="a"]
+	"A3" -> "A1" [label="b"]
+}
