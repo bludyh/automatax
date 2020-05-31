@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.readButton = new System.Windows.Forms.Button();
@@ -38,11 +39,13 @@
             this.isDfaTextBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.resultsGridView = new System.Windows.Forms.DataGridView();
             this.message2 = new System.Windows.Forms.Label();
             this.message1 = new System.Windows.Forms.Label();
             this.clearButton = new System.Windows.Forms.Button();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -150,22 +153,21 @@
             this.label3.TabIndex = 4;
             this.label3.Text = "Acceptance Tests";
             // 
-            // groupBox3
-            // 
-            this.groupBox3.Location = new System.Drawing.Point(12, 427);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(565, 242);
-            this.groupBox3.TabIndex = 3;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "groupBox3";
-            // 
             // resultsGridView
             // 
+            this.resultsGridView.AllowUserToResizeRows = false;
             this.resultsGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.resultsGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Column1,
+            this.Column2,
+            this.Column3});
             this.resultsGridView.Location = new System.Drawing.Point(9, 60);
             this.resultsGridView.Name = "resultsGridView";
+            this.resultsGridView.ReadOnly = true;
+            this.resultsGridView.RowHeadersVisible = false;
             this.resultsGridView.Size = new System.Drawing.Size(550, 237);
             this.resultsGridView.TabIndex = 4;
+            this.resultsGridView.SelectionChanged += new System.EventHandler(this.resultsGridView_SelectionChanged);
             // 
             // message2
             // 
@@ -195,12 +197,32 @@
             this.clearButton.UseVisualStyleBackColor = true;
             this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
             // 
+            // Column1
+            // 
+            this.Column1.HeaderText = "Word";
+            this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
+            // 
+            // Column2
+            // 
+            this.Column2.HeaderText = "Is accepted?";
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            // 
+            // Column3
+            // 
+            this.Column3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.Red;
+            this.Column3.DefaultCellStyle = dataGridViewCellStyle6;
+            this.Column3.HeaderText = "";
+            this.Column3.Name = "Column3";
+            this.Column3.ReadOnly = true;
+            // 
             // Automatax
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 681);
-            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.pictureBox1);
@@ -228,11 +250,13 @@
         private System.Windows.Forms.TextBox isDfaTextBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.DataGridView resultsGridView;
         private System.Windows.Forms.Label message2;
         private System.Windows.Forms.Label message1;
         private System.Windows.Forms.Button clearButton;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
     }
 }
 

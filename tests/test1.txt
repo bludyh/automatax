@@ -1,15 +1,33 @@
 # comments
 
-alphabet: a,b
+alphabet: 0,1
 
-states: A1,A2
+states: q0,q1,q2,q3,q4
 
-final: A2
+final: q3,q4
 
 transitions:
-A1,a --> A2
-A2,a --> A2
-A2,b --> A2
+q0,0 --> q1
+q0,1 --> q2
+q1,0 --> q3
+q1,1 --> q2
+q2,0 --> q1
+q2,1 --> q4
+q3,0 --> q3
+q3,1 --> q2
+q4,0 --> q1
+q4,1 --> q4
 end.
 
-dfa: n
+dfa: y
+
+words:
+000,y
+111,y
+0100,y
+1100,y
+0010111,y
+10101100,y
+01101010,n
+01000110,y
+end.

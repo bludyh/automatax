@@ -66,13 +66,31 @@ namespace Automatax
                 }
 
                 if (line.StartsWith("dfa"))
-                    if (line.Split(':').Last().Trim() == "y")
-                        testVector.IsDfa = true;
-                    else if (line.Split(':').Last().Trim() == "n")
-                        testVector.IsDfa = false;
+                    testVector.IsDfa = StringToBool(line.Split(':').Last().Trim());
+
+                if (line.StartsWith("words"))
+                {
+                    while ((line = reader.ReadLine()) != null && !line.Contains("end"))
+                    {
+                        line = line.Trim();
+
+                        if (line == string.Empty || line.StartsWith("#"))
+                            continue;
+
+                        testVector.Words.Add(line.Split(',').First(), StringToBool(line.Split(',').Last()));
+                    }
+                }
             }
 
             return new Automaton(alphabet, states, finalStates, transitions) { TestVector = testVector };
+        }
+
+        private static bool? StringToBool(string input)
+        {
+            if (input == "y") return true;
+            else if (input == "n") return false;
+
+            return null;
         }
 
         private void loadButton_Click(object sender, System.EventArgs e)
@@ -91,6 +109,9 @@ namespace Automatax
 
         private void readButton_Click(object sender, System.EventArgs e)
         {
+            loadButton.Enabled = false;
+            readButton.Enabled = false;
+
             if (string.IsNullOrEmpty(inputTextBox.Text))
             {
                 message1.Text = "Invalid input.";
@@ -112,19 +133,63 @@ namespace Automatax
             dot.WaitForExit();
             pictureBox1.ImageLocation = "automaton.png";
 
-            // Test vectors
-            isDfaTextBox.Text = _automaton.IsDfa().ToString();
-            if (_automaton.IsDfa() == _automaton.TestVector.IsDfa)
-                isDfaTextBox.BackColor = Color.Green;
+            // Is dfa
+            bool? expected = _automaton.TestVector.IsDfa;
+            bool actual = _automaton.IsDfa();
+
+            if (expected == null)
+            {
+                isDfaTextBox.Text = actual.ToString();
+                message2.Text = "No test vector.";
+            }
             else
             {
-                isDfaTextBox.BackColor = Color.Red;
-                message2.Text = "Test vector is incorrect.";
+                isDfaTextBox.Text = expected.ToString();
+
+                if (actual == expected)
+                    isDfaTextBox.BackColor = Color.LightGreen;
+                else
+                {
+                    isDfaTextBox.BackColor = Color.Red;
+                    message2.Text = "Test vector is incorrect.";
+                }
+            }
+
+            // Words
+            foreach (var item in _automaton.TestVector.Words)
+            {
+                expected = _automaton.TestVector.Words[item.Key];
+                actual = _automaton.Accepts(item.Key);
+                var row = (DataGridViewRow)resultsGridView.Rows[0].Clone();
+
+                row.Cells[0].Value = item.Key;
+
+                if (expected == null)
+                {
+                    row.Cells[1].Value = actual;
+                    row.Cells[2].Value = "No test vector.";
+                }
+                else
+                {
+                    row.Cells[1].Value = expected;
+
+                    if (actual == expected)
+                        row.Cells[1].Style.BackColor = Color.LightGreen;
+                    else
+                    {
+                        row.Cells[1].Style.BackColor = Color.Red;
+                        row.Cells[2].Value = "Test vector is incorrect.";
+                    }
+                }
+
+                resultsGridView.Rows.Add(row);
             }
         }
 
         private void clearButton_Click(object sender, System.EventArgs e)
         {
+            loadButton.Enabled = true;
+            readButton.Enabled = true;
             inputTextBox.Text = string.Empty;
             inputTextBox.ReadOnly = false;
             pictureBox1.Image = null;
@@ -132,6 +197,12 @@ namespace Automatax
             isDfaTextBox.Text = string.Empty;
             isDfaTextBox.BackColor = Color.White;
             message2.Text = string.Empty;
+            resultsGridView.Rows.Clear();
+        }
+
+        private void resultsGridView_SelectionChanged(object sender, System.EventArgs e)
+        {
+            resultsGridView.ClearSelection();
         }
     }
 }

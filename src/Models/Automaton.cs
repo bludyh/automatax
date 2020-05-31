@@ -58,5 +58,24 @@ namespace Automatax.Models
 
             return true;
         }
+
+        public bool Accepts(string word)
+        {
+            var currentState = StartState;
+
+            foreach (var symbol in word.ToCharArray())
+            {
+                var transition = Transitions.Find(t => t.StartState == currentState && t.Symbol == symbol);
+                if (transition == null)
+                    return false;
+
+                currentState = transition.EndState;
+            }
+
+            if (FinalStates.Contains(currentState))
+                return true;
+
+            return false;
+        }
     }
 }

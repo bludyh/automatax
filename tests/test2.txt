@@ -15,4 +15,12 @@ A3,a --> A2
 A3,b --> A1
 end.
 
-dfa: n
+dfa: y
+
+words:
+a,y
+ab,y
+aaab,y
+aaaa,n
+aaba,n
+end.
