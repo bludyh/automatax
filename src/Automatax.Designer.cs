@@ -28,24 +28,24 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.clearButton = new System.Windows.Forms.Button();
+            this.message1 = new System.Windows.Forms.Label();
             this.readButton = new System.Windows.Forms.Button();
             this.loadButton = new System.Windows.Forms.Button();
             this.inputTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.isDfaTextBox = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.resultsGridView = new System.Windows.Forms.DataGridView();
             this.message2 = new System.Windows.Forms.Label();
-            this.message1 = new System.Windows.Forms.Label();
-            this.clearButton = new System.Windows.Forms.Button();
+            this.resultsGridView = new System.Windows.Forms.DataGridView();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.label3 = new System.Windows.Forms.Label();
+            this.isDfaTextBox = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -77,6 +77,25 @@
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Input";
+            // 
+            // clearButton
+            // 
+            this.clearButton.Location = new System.Drawing.Point(484, 45);
+            this.clearButton.Name = "clearButton";
+            this.clearButton.Size = new System.Drawing.Size(75, 23);
+            this.clearButton.TabIndex = 7;
+            this.clearButton.Text = "Clear";
+            this.clearButton.UseVisualStyleBackColor = true;
+            this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
+            // 
+            // message1
+            // 
+            this.message1.AutoSize = true;
+            this.message1.ForeColor = System.Drawing.Color.Red;
+            this.message1.Location = new System.Drawing.Point(40, 71);
+            this.message1.Name = "message1";
+            this.message1.Size = new System.Drawing.Size(0, 13);
+            this.message1.TabIndex = 6;
             // 
             // readButton
             // 
@@ -128,30 +147,14 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Test Vectors";
             // 
-            // isDfaTextBox
+            // message2
             // 
-            this.isDfaTextBox.Location = new System.Drawing.Point(57, 19);
-            this.isDfaTextBox.Name = "isDfaTextBox";
-            this.isDfaTextBox.Size = new System.Drawing.Size(100, 20);
-            this.isDfaTextBox.TabIndex = 3;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 22);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(45, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Is DFA?";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 44);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(94, 13);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "Acceptance Tests";
+            this.message2.AutoSize = true;
+            this.message2.ForeColor = System.Drawing.Color.Red;
+            this.message2.Location = new System.Drawing.Point(163, 22);
+            this.message2.Name = "message2";
+            this.message2.Size = new System.Drawing.Size(0, 13);
+            this.message2.TabIndex = 5;
             // 
             // resultsGridView
             // 
@@ -169,34 +172,6 @@
             this.resultsGridView.TabIndex = 4;
             this.resultsGridView.SelectionChanged += new System.EventHandler(this.resultsGridView_SelectionChanged);
             // 
-            // message2
-            // 
-            this.message2.AutoSize = true;
-            this.message2.ForeColor = System.Drawing.Color.Red;
-            this.message2.Location = new System.Drawing.Point(163, 22);
-            this.message2.Name = "message2";
-            this.message2.Size = new System.Drawing.Size(0, 13);
-            this.message2.TabIndex = 5;
-            // 
-            // message1
-            // 
-            this.message1.AutoSize = true;
-            this.message1.ForeColor = System.Drawing.Color.Red;
-            this.message1.Location = new System.Drawing.Point(40, 71);
-            this.message1.Name = "message1";
-            this.message1.Size = new System.Drawing.Size(0, 13);
-            this.message1.TabIndex = 6;
-            // 
-            // clearButton
-            // 
-            this.clearButton.Location = new System.Drawing.Point(484, 45);
-            this.clearButton.Name = "clearButton";
-            this.clearButton.Size = new System.Drawing.Size(75, 23);
-            this.clearButton.TabIndex = 7;
-            this.clearButton.Text = "Clear";
-            this.clearButton.UseVisualStyleBackColor = true;
-            this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
-            // 
             // Column1
             // 
             this.Column1.HeaderText = "Word";
@@ -212,11 +187,36 @@
             // Column3
             // 
             this.Column3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.Red;
-            this.Column3.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.Red;
+            this.Column3.DefaultCellStyle = dataGridViewCellStyle1;
             this.Column3.HeaderText = "";
             this.Column3.Name = "Column3";
             this.Column3.ReadOnly = true;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 44);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(94, 13);
+            this.label3.TabIndex = 4;
+            this.label3.Text = "Acceptance Tests";
+            // 
+            // isDfaTextBox
+            // 
+            this.isDfaTextBox.Location = new System.Drawing.Point(57, 19);
+            this.isDfaTextBox.Name = "isDfaTextBox";
+            this.isDfaTextBox.Size = new System.Drawing.Size(100, 20);
+            this.isDfaTextBox.TabIndex = 3;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 22);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(45, 13);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Is DFA?";
             // 
             // Automatax
             // 
@@ -227,7 +227,7 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.pictureBox1);
             this.Name = "Automatax";
-            this.Text = "Form1";
+            this.Text = "Automatax";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

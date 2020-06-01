@@ -1,0 +1,30 @@
+# NFA accepting empty word or words that start with 2 a's or end with 1 b.
+
+alphabet: a,b
+
+states: q0,q1,q2,q3,q4,q5
+
+final: q0,q3,q5
+
+transitions:
+q0,_ --> q1
+q0,_ --> q4
+q1,a --> q2
+q2,a --> q3
+q3,a --> q3
+q3,b --> q3
+q4,a --> q4
+q4,b --> q4
+q4,b --> q5
+end.
+
+dfa: n
+
+words:
+b,y
+aaabba,y
+ab,n
+a,n
+,y
+abb,y
+end.

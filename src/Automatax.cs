@@ -1,4 +1,5 @@
 ﻿using Automatax.Models;
+using Automatax.Parsers;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -12,85 +13,14 @@ namespace Automatax
     public partial class Automatax : Form
     {
 
-        private Automaton _automaton;
+        private IParser _parser;
+        private IAutomaton _automaton;
 
         public Automatax()
         {
+            _parser = new Parser();
+
             InitializeComponent();
-        }
-
-        private static Automaton Parse(StreamReader reader)
-        {
-            List<char> alphabet = new List<char>();
-            List<string> states = new List<string>();
-            List<string> finalStates = new List<string>();
-            List<Transition> transitions = new List<Transition>();
-            TestVector testVector = new TestVector();
-
-            string line;
-            while ((line = reader.ReadLine()) != null)
-            {
-                line = line.Trim();
-
-                if (line == string.Empty || line.StartsWith("#"))
-                    continue;
-
-                if (line.StartsWith("alphabet"))
-                    alphabet = line.Split(':').Last().ToCharArray().Where(c => char.IsLetterOrDigit(c)).ToList();
-
-                if (line.StartsWith("states"))
-                    states = line.Split(':').Last().Trim().Split(',').ToList();
-
-                if (line.StartsWith("final"))
-                    finalStates = line.Split(':').Last().Trim().Split(',').ToList();
-
-                if (line.StartsWith("transitions"))
-                {
-                    string startState;
-                    char symbol;
-                    string endState;
-                    Transition transition;
-                    while ((line = reader.ReadLine()) != null && !line.Contains("end"))
-                    {
-                        line = line.Trim();
-
-                        if (line == string.Empty || line.StartsWith("#"))
-                            continue;
-
-                        startState = line.Split(',').First();
-                        symbol = line.Split(',').Last().ToCharArray().First();
-                        endState = line.Split(new string[] { "-->" }, System.StringSplitOptions.None).Last().Trim();
-                        transition = new Transition(startState, symbol, endState);
-                        transitions.Add(transition);
-                    }
-                }
-
-                if (line.StartsWith("dfa"))
-                    testVector.IsDfa = StringToBool(line.Split(':').Last().Trim());
-
-                if (line.StartsWith("words"))
-                {
-                    while ((line = reader.ReadLine()) != null && !line.Contains("end"))
-                    {
-                        line = line.Trim();
-
-                        if (line == string.Empty || line.StartsWith("#"))
-                            continue;
-
-                        testVector.Words.Add(line.Split(',').First(), StringToBool(line.Split(',').Last()));
-                    }
-                }
-            }
-
-            return new Automaton(alphabet, states, finalStates, transitions) { TestVector = testVector };
-        }
-
-        private static bool? StringToBool(string input)
-        {
-            if (input == "y") return true;
-            else if (input == "n") return false;
-
-            return null;
         }
 
         private void loadButton_Click(object sender, System.EventArgs e)
@@ -121,7 +51,7 @@ namespace Automatax
             // Read from file
             using (var reader = new StreamReader(inputTextBox.Text))
             {
-                _automaton = Parse(reader);
+                _automaton = _parser.Parse(reader);
             }
 
             // Show PictureBox

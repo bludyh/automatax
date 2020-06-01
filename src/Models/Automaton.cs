@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Automatax.Models
 {
-    public class Automaton
+    public class Automaton : IAutomaton
     {
 
         public Automaton(List<char> alphabet, List<string> states, List<string> finalStates, List<Transition> transitions)
@@ -14,6 +14,7 @@ namespace Automatax.Models
             StartState = States.First();
             FinalStates = finalStates;
             Transitions = transitions;
+            TestVector = new TestVector();
         }
 
         public List<char> Alphabet { get; }
@@ -21,7 +22,7 @@ namespace Automatax.Models
         public string StartState { get; }
         public List<string> FinalStates { get; }
         public List<Transition> Transitions { get; }
-        public TestVector TestVector { get; set; }
+        public TestVector TestVector { get; }
 
         public override string ToString()
         {
@@ -59,17 +60,32 @@ namespace Automatax.Models
             return true;
         }
 
-        public bool Accepts(string word)
+        public virtual bool Accepts(string word)
         {
-            var currentState = StartState;
+            return Accepts(StartState, word);
+        }
 
-            foreach (var symbol in word.ToCharArray())
+        private bool Accepts(string currentState, string input)
+        {
+            if (input.Length > 0)
             {
-                var transition = Transitions.Find(t => t.StartState == currentState && t.Symbol == symbol);
-                if (transition == null)
-                    return false;
+                var transitions = Transitions.FindAll(t => t.StartState == currentState && (t.Symbol == input[0] || t.Symbol == '_'));
 
-                currentState = transition.EndState;
+                foreach (var transition in transitions)
+                {
+                    if (transition.Symbol == '_')
+                    {
+                        if (Accepts(transition.EndState, input))
+                            return true;
+                    }
+                    else
+                    {
+                        if (Accepts(transition.EndState, input.Substring(1)))
+                            return true;
+                    }
+
+                }
+                return false;
             }
 
             if (FinalStates.Contains(currentState))

@@ -18,7 +18,7 @@ namespace Automatax.Models
 
         public override string ToString()
         {
-            return $"{Environment.NewLine}\t\"{StartState}\" -> \"{EndState}\" [label=\"{Symbol}\"]";
+            return $"{Environment.NewLine}\t\"{StartState}\" -> \"{EndState}\" [label=\"{(Symbol == '_' ? 'ε' : Symbol)}\"]";
         }
     }
 }
