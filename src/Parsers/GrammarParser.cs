@@ -9,5 +9,10 @@ namespace Automatax.Parsers
         {
             throw new System.NotImplementedException();
         }
+
+        public TestVector ParseTests(StreamReader reader)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

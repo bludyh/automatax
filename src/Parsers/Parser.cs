@@ -7,22 +7,26 @@ namespace Automatax
     public class Parser : IParser
     {
 
+        private IParser _innerParser;
+
         public IAutomaton Parse(StreamReader reader)
         {
-            IParser innerParser;
             string content = reader.ReadToEnd();
 
-            if (content.Contains("stack"))
-                innerParser = new PushDownAutomatonParser();
-            else if (content.Contains("grammar"))
-                innerParser = new GrammarParser();
+            if (content.Contains("grammar"))
+                _innerParser = new GrammarParser();
             else
-                innerParser = new FiniteAutomatonParser();
+                _innerParser = new AutomatonParser();
 
             reader.BaseStream.Position = 0;
             reader.DiscardBufferedData();
 
-            return innerParser.Parse(reader);
+            return _innerParser.Parse(reader);
+        }
+
+        public TestVector ParseTests(StreamReader reader)
+        {
+            return _innerParser.ParseTests(reader);
         }
 
     }

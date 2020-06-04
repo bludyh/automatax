@@ -1,11 +1,9 @@
-﻿using Automatax.Models;
+﻿using Automatax.Exceptions;
+using Automatax.Models;
 using Automatax.Parsers;
-using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace Automatax
@@ -13,13 +11,8 @@ namespace Automatax
     public partial class Automatax : Form
     {
 
-        private IParser _parser;
-        private IAutomaton _automaton;
-
         public Automatax()
         {
-            _parser = new Parser();
-
             InitializeComponent();
         }
 
@@ -48,24 +41,38 @@ namespace Automatax
                 return;
             }
 
+            IAutomaton automaton;
+            TestVector testVector;
+            IParser parser = new Parser();
+
             // Read from file
             using (var reader = new StreamReader(inputTextBox.Text))
             {
-                _automaton = _parser.Parse(reader);
+                try
+                {
+                    automaton = parser.Parse(reader);
+                    testVector = parser.ParseTests(reader);
+                }
+                catch (InvalidSyntaxException ex)
+                {
+                    message1.Text = ex.Message;
+                    return;
+                }
             }
 
-            // Show PictureBox
-            File.WriteAllText("automaton.dot", _automaton.ToString());
+            // Show Graph
+            File.WriteAllText("automaton.dot", automaton.ToString());
             Process dot = new Process();
             dot.StartInfo.FileName = "dot.exe";
             dot.StartInfo.Arguments = "-Tpng -oautomaton.png automaton.dot";
             dot.Start();
             dot.WaitForExit();
-            pictureBox1.ImageLocation = "automaton.png";
+
+            Process.Start("automaton.png");
 
             // Is dfa
-            bool? expected = _automaton.TestVector.IsDfa;
-            bool actual = _automaton.IsDfa();
+            bool? expected = testVector.IsDfa;
+            bool actual = automaton.IsDfa();
 
             if (expected == null)
             {
@@ -86,10 +93,10 @@ namespace Automatax
             }
 
             // Words
-            foreach (var item in _automaton.TestVector.Words)
+            foreach (var item in testVector.Words)
             {
-                expected = _automaton.TestVector.Words[item.Key];
-                actual = _automaton.Accepts(item.Key);
+                expected = testVector.Words[item.Key];
+                actual = automaton.Accepts(item.Key);
                 var row = (DataGridViewRow)resultsGridView.Rows[0].Clone();
 
                 row.Cells[0].Value = item.Key;
@@ -122,7 +129,6 @@ namespace Automatax
             readButton.Enabled = true;
             inputTextBox.Text = string.Empty;
             inputTextBox.ReadOnly = false;
-            pictureBox1.Image = null;
             message1.Text = string.Empty;
             isDfaTextBox.Text = string.Empty;
             isDfaTextBox.BackColor = Color.White;

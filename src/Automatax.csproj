@@ -52,22 +52,22 @@
     <Compile Include="Automatax.Designer.cs">
       <DependentUpon>Automatax.cs</DependentUpon>
     </Compile>
+    <Compile Include="Exceptions\InvalidSyntaxException.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Models\Automaton.cs" />
     <Compile Include="Models\Grammar.cs" />
     <Compile Include="Models\IAutomaton.cs" />
-    <Compile Include="Models\PushDownAutomaton.cs" />
     <Compile Include="Models\TestVector.cs" />
     <Compile Include="Models\Transition.cs" />
-    <Compile Include="Parsers\FiniteAutomatonParser.cs" />
+    <Compile Include="Parsers\AutomatonParser.cs" />
     <Compile Include="Parsers\GrammarParser.cs" />
     <Compile Include="Parsers\IParser.cs" />
     <Compile Include="Parsers\Parser.cs" />
-    <Compile Include="Parsers\PushDownAutomatonParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Automatax.resx">
       <DependentUpon>Automatax.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

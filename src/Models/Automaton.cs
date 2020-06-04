@@ -14,7 +14,7 @@ namespace Automatax.Models
             StartState = States.First();
             FinalStates = finalStates;
             Transitions = transitions;
-            TestVector = new TestVector();
+            Stack = new Stack<char>();
         }
 
         public List<char> Alphabet { get; }
@@ -22,7 +22,7 @@ namespace Automatax.Models
         public string StartState { get; }
         public List<string> FinalStates { get; }
         public List<Transition> Transitions { get; }
-        public TestVector TestVector { get; }
+        public Stack<char> Stack { get; }
 
         public override string ToString()
         {
@@ -60,35 +60,44 @@ namespace Automatax.Models
             return true;
         }
 
-        public virtual bool Accepts(string word)
+        public bool Accepts(string word)
         {
-            return Accepts(StartState, word);
+            var result = Accepts(StartState, word);
+
+            Stack.Clear();
+
+            return result;
         }
 
         private bool Accepts(string currentState, string input)
         {
-            if (input.Length > 0)
+            var transitions = Transitions.FindAll(t =>
+                t.StartState == currentState && (
+                (input != "" && t.Symbol == input[0] && Stack.Count > 0 && t.StackPop == Stack.Peek())
+                || (input != "" && t.Symbol == input[0] && t.StackPop == '_')
+                || (t.Symbol == '_' && Stack.Count > 0 && t.StackPop == Stack.Peek())
+                || (t.Symbol == '_' && t.StackPop == '_'))
+            );
+
+            foreach (var transition in transitions)
             {
-                var transitions = Transitions.FindAll(t => t.StartState == currentState && (t.Symbol == input[0] || t.Symbol == '_'));
-
-                foreach (var transition in transitions)
+                if (transition.StackPop != '_')
+                    Stack.Pop();
+                if (transition.StackPush != '_')
+                    Stack.Push(transition.StackPush);
+                if (transition.Symbol == '_')
                 {
-                    if (transition.Symbol == '_')
-                    {
-                        if (Accepts(transition.EndState, input))
-                            return true;
-                    }
-                    else
-                    {
-                        if (Accepts(transition.EndState, input.Substring(1)))
-                            return true;
-                    }
-
+                    if (Accepts(transition.EndState, input))
+                        return true;
                 }
-                return false;
+                else
+                {
+                    if (Accepts(transition.EndState, input.Substring(1)))
+                        return true;
+                }
             }
 
-            if (FinalStates.Contains(currentState))
+            if (input == "" && FinalStates.Contains(currentState) && Stack.Count == 0)
                 return true;
 
             return false;

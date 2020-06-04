@@ -1,0 +1,31 @@
+# PDA accepting words like 0^(n)1^(n).
+
+alphabet: 0,1
+
+stack: 0
+
+states: q1,q2,q3,q4
+
+final: q1,q4
+
+transitions:
+q1,_ --> q2
+q2,0 [_,0] --> q2
+q2,1 [0,_] --> q3
+q3,1 [0,_] --> q3
+q3,_ --> q4
+end.
+
+dfa: n
+
+words:
+,y
+01,y
+0011,y
+00000000001111111111,y
+1,n
+10,n
+001,n
+0101,n
+0000011111111111,n
+end.

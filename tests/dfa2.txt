@@ -22,5 +22,5 @@ a,y
 ab,y
 aaab,y
 aaaa,n
-aaba,n
+aaba,y
 end.

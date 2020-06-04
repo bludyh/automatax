@@ -23,7 +23,7 @@ dfa: n
 words:
 b,y
 aaabba,y
-ab,n
+ab,y
 a,n
 ,y
 abb,y

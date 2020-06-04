@@ -1,0 +1,64 @@
+# NFA accepting REG: (l|e)*n?(i|e)el*. Credit: https://www.leniel.net/2009/05/regex-engine-in-csharp-match-strings.html
+# REG => NFA: https://cyberzhg.github.io/toolbox/regex2nfa
+
+alphabet: l,e,n,i
+
+states: 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21
+
+final: 21
+
+transitions:
+0,_ --> 1
+0,_ --> 7
+1,_ --> 2
+1,_ --> 4
+2,l --> 3
+3,_ --> 6
+4,e --> 5
+5,_ --> 6
+6,_ --> 1
+6,_ --> 7
+7,_ --> 8
+7,_ --> 10
+8,n --> 9
+9,_ --> 12
+10,_ --> 11
+11,_ --> 12
+12,_ --> 13
+12,_ --> 15
+13,i --> 14
+14,_ --> 17
+15,e --> 16
+16,_ --> 17
+17,e --> 18
+18,_ --> 19
+18,_ --> 21
+19,l --> 20
+20,_ --> 19
+20,_ --> 21
+end.
+
+dfa: n
+
+words:
+eee,y
+eel,y
+ie,y
+leie,y
+leleel,y
+leliel,y
+leniel,y
+lniel,y
+niel,y
+eeeil,n
+ennil,n
+lele,n
+lelel,n
+lelenil,n
+llnel,n
+ln,n
+lnel,n
+nelll,n
+nil,n
+nll,n
+end.

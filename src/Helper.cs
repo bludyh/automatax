@@ -9,5 +9,13 @@
 
             return null;
         }
+
+        public static char ReplaceSpecialSymbol(char symbol)
+        {
+            if (symbol == '_')
+                symbol = 'ε';
+
+            return symbol;
+        }
     }
 }

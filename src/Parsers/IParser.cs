@@ -6,5 +6,6 @@ namespace Automatax.Parsers
     public interface IParser
     {
         IAutomaton Parse(StreamReader reader);
+        TestVector ParseTests(StreamReader reader);
     }
 }
