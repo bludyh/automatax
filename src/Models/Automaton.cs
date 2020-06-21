@@ -62,15 +62,21 @@ namespace Automatax.Models
 
         public bool Accepts(string word)
         {
-            var result = Accepts(StartState, word);
+            var count = 0;
+            var result = Accepts(StartState, word, ref count);
 
             Stack.Clear();
 
             return result;
         }
 
-        private bool Accepts(string currentState, string input)
+        private bool Accepts(string currentState, string input, ref int count)
         {
+            count++;
+
+            if (count > 50)
+                throw new Exception("Exceeded 50 steps limit.");
+
             var transitions = Transitions.FindAll(t =>
                 t.StartState == currentState && (
                 (input != "" && t.Symbol == input[0] && Stack.Count > 0 && t.StackPop == Stack.Peek())
@@ -87,12 +93,12 @@ namespace Automatax.Models
                     Stack.Push(transition.StackPush);
                 if (transition.Symbol == '_')
                 {
-                    if (Accepts(transition.EndState, input))
+                    if (Accepts(transition.EndState, input, ref count))
                         return true;
                 }
                 else
                 {
-                    if (Accepts(transition.EndState, input.Substring(1)))
+                    if (Accepts(transition.EndState, input.Substring(1), ref count))
                         return true;
                 }
             }

@@ -1,6 +1,7 @@
 ﻿using Automatax.Exceptions;
 using Automatax.Models;
 using Automatax.Parsers;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -95,28 +96,35 @@ namespace Automatax
             // Words
             foreach (var item in testVector.Words)
             {
-                expected = testVector.Words[item.Key];
-                actual = automaton.Accepts(item.Key);
                 var row = (DataGridViewRow)resultsGridView.Rows[0].Clone();
-
                 row.Cells[0].Value = item.Key;
 
-                if (expected == null)
+                try
                 {
-                    row.Cells[1].Value = actual;
-                    row.Cells[2].Value = "No test vector.";
-                }
-                else
-                {
-                    row.Cells[1].Value = expected;
+                    expected = testVector.Words[item.Key];
+                    actual = automaton.Accepts(item.Key);
 
-                    if (actual == expected)
-                        row.Cells[1].Style.BackColor = Color.LightGreen;
+                    if (expected == null)
+                    {
+                        row.Cells[1].Value = actual;
+                        row.Cells[2].Value = "No test vector.";
+                    }
                     else
                     {
-                        row.Cells[1].Style.BackColor = Color.Red;
-                        row.Cells[2].Value = "Test vector is incorrect.";
+                        row.Cells[1].Value = expected;
+
+                        if (actual == expected)
+                            row.Cells[1].Style.BackColor = Color.LightGreen;
+                        else
+                        {
+                            row.Cells[1].Style.BackColor = Color.Red;
+                            row.Cells[2].Value = "Test vector is incorrect.";
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    row.Cells[2].Value = ex.Message;
                 }
 
                 resultsGridView.Rows.Add(row);
