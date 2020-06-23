@@ -62,13 +62,12 @@ namespace Automatax
             }
 
             // Show Graph
-            File.WriteAllText("automaton.dot", automaton.ToString());
+            File.WriteAllText("automaton.dot", automaton.ToGraph());
             Process dot = new Process();
             dot.StartInfo.FileName = "dot.exe";
             dot.StartInfo.Arguments = "-Tpng -oautomaton.png automaton.dot";
             dot.Start();
             dot.WaitForExit();
-
             Process.Start("automaton.png");
 
             // Is dfa
@@ -93,7 +92,7 @@ namespace Automatax
                 }
             }
 
-            // Words
+            // Acceptance Tests
             foreach (var item in testVector.Words)
             {
                 var row = (DataGridViewRow)resultsGridView.Rows[0].Clone();
@@ -129,6 +128,18 @@ namespace Automatax
 
                 resultsGridView.Rows.Add(row);
             }
+
+            // PDA & CFG Conversions
+            if (automaton is Automaton pda)
+            {
+                //File.WriteAllText("cfg.txt", pda.ToGrammar().ToText());
+                //cfgTextBox.Text = Directory.GetCurrentDirectory() + 
+            }
+            else if (automaton is Grammar cfg)
+            {
+                File.WriteAllText("pda.txt", cfg.ToPda().ToText());
+                pdaTextBox.Text = Directory.GetCurrentDirectory() + "\\pda.txt";
+            }
         }
 
         private void clearButton_Click(object sender, System.EventArgs e)
@@ -142,11 +153,25 @@ namespace Automatax
             isDfaTextBox.BackColor = Color.White;
             message2.Text = string.Empty;
             resultsGridView.Rows.Clear();
+            pdaTextBox.Text = string.Empty;
+            cfgTextBox.Text = string.Empty;
         }
 
         private void resultsGridView_SelectionChanged(object sender, System.EventArgs e)
         {
             resultsGridView.ClearSelection();
+        }
+
+        private void showPdaFileButton_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(pdaTextBox.Text))
+                Process.Start(pdaTextBox.Text);
+        }
+
+        private void showCfgFileButton_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(cfgTextBox.Text))
+                Process.Start(cfgTextBox.Text);
         }
     }
 }

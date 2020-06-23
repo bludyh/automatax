@@ -45,9 +45,17 @@
             this.label3 = new System.Windows.Forms.Label();
             this.isDfaTextBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.showCfgFileButton = new System.Windows.Forms.Button();
+            this.showPdaFileButton = new System.Windows.Forms.Button();
+            this.cfgTextBox = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.pdaTextBox = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.resultsGridView)).BeginInit();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -204,11 +212,81 @@
             this.label2.TabIndex = 3;
             this.label2.Text = "Is DFA?";
             // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.showCfgFileButton);
+            this.groupBox3.Controls.Add(this.showPdaFileButton);
+            this.groupBox3.Controls.Add(this.cfgTextBox);
+            this.groupBox3.Controls.Add(this.label5);
+            this.groupBox3.Controls.Add(this.pdaTextBox);
+            this.groupBox3.Controls.Add(this.label4);
+            this.groupBox3.Location = new System.Drawing.Point(12, 427);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(565, 83);
+            this.groupBox3.TabIndex = 3;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "PDA <-> CFG";
+            // 
+            // showCfgFileButton
+            // 
+            this.showCfgFileButton.Location = new System.Drawing.Point(349, 44);
+            this.showCfgFileButton.Name = "showCfgFileButton";
+            this.showCfgFileButton.Size = new System.Drawing.Size(210, 23);
+            this.showCfgFileButton.TabIndex = 5;
+            this.showCfgFileButton.Text = "Show File";
+            this.showCfgFileButton.UseVisualStyleBackColor = true;
+            this.showCfgFileButton.Click += new System.EventHandler(this.showCfgFileButton_Click);
+            // 
+            // showPdaFileButton
+            // 
+            this.showPdaFileButton.Location = new System.Drawing.Point(349, 18);
+            this.showPdaFileButton.Name = "showPdaFileButton";
+            this.showPdaFileButton.Size = new System.Drawing.Size(210, 23);
+            this.showPdaFileButton.TabIndex = 4;
+            this.showPdaFileButton.Text = "Show File";
+            this.showPdaFileButton.UseVisualStyleBackColor = true;
+            this.showPdaFileButton.Click += new System.EventHandler(this.showPdaFileButton_Click);
+            // 
+            // cfgTextBox
+            // 
+            this.cfgTextBox.Location = new System.Drawing.Point(43, 46);
+            this.cfgTextBox.Name = "cfgTextBox";
+            this.cfgTextBox.ReadOnly = true;
+            this.cfgTextBox.Size = new System.Drawing.Size(300, 20);
+            this.cfgTextBox.TabIndex = 3;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(8, 49);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(28, 13);
+            this.label5.TabIndex = 2;
+            this.label5.Text = "CFG";
+            // 
+            // pdaTextBox
+            // 
+            this.pdaTextBox.Location = new System.Drawing.Point(43, 20);
+            this.pdaTextBox.Name = "pdaTextBox";
+            this.pdaTextBox.ReadOnly = true;
+            this.pdaTextBox.Size = new System.Drawing.Size(300, 20);
+            this.pdaTextBox.TabIndex = 1;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(8, 23);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(29, 13);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "PDA";
+            // 
             // Automatax
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(589, 681);
+            this.ClientSize = new System.Drawing.Size(589, 521);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Name = "Automatax";
@@ -218,6 +296,8 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.resultsGridView)).EndInit();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -239,6 +319,13 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.TextBox pdaTextBox;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button showCfgFileButton;
+        private System.Windows.Forms.Button showPdaFileButton;
+        private System.Windows.Forms.TextBox cfgTextBox;
+        private System.Windows.Forms.Label label5;
     }
 }
 

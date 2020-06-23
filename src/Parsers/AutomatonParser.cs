@@ -28,13 +28,13 @@ namespace Automatax.Parsers
 
                 if (line.Contains("alphabet:"))
                 {
-                    alphabet = line.Split(':')[1].ToCharArray().Where(c => char.IsLetterOrDigit(c)).ToList();
+                    alphabet = line.Split(':')[1].ToCharArray().Where(c => c != ' ' && c != ',').ToList();
                     continue;
                 }
 
                 if (line.Contains("stack:"))
                 {
-                    stackAlphabet = line.Split(':')[1].ToCharArray().Where(c => char.IsLetterOrDigit(c)).ToList();
+                    stackAlphabet = line.Split(':')[1].ToCharArray().Where(c => c != ' ' && c != ',').ToList();
                     continue;
                 }
 
@@ -138,7 +138,7 @@ namespace Automatax.Parsers
             if (states.Count == 0)
                 throw new InvalidSyntaxException($"{fileName}: Automaton must have a list of states.");
 
-            return new Automaton(alphabet, states, finalStates, transitions);
+            return new Automaton(alphabet, stackAlphabet, states, finalStates, transitions);
         }
 
         public TestVector ParseTests(StreamReader reader)

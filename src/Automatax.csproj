@@ -57,6 +57,7 @@
     <Compile Include="Models\Automaton.cs" />
     <Compile Include="Models\Grammar.cs" />
     <Compile Include="Models\IAutomaton.cs" />
+    <Compile Include="Models\Rule.cs" />
     <Compile Include="Models\TestVector.cs" />
     <Compile Include="Models\Transition.cs" />
     <Compile Include="Parsers\AutomatonParser.cs" />

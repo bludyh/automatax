@@ -4,5 +4,7 @@
     {
         bool IsDfa();
         bool Accepts(string word);
+        string ToGraph();
+        string ToText();
     }
 }

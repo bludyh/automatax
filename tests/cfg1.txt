@@ -1,0 +1,19 @@
+grammar:
+S:a B
+S:u U
+B:b B c
+B:_ 
+U:W W
+W:w w
+end.
+
+dfa: n
+finite: n
+
+words:
+,n
+aa,n
+abbcc,y
+u,n
+uwwww,y
+end.

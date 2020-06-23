@@ -20,12 +20,20 @@ namespace Automatax.Models
         public char StackPush { get; }
         public string EndState { get; }
 
-        public override string ToString()
+        public string ToGraph()
         {
             if (StackPop == '_' && StackPush == '_')
                 return $"{Environment.NewLine}\t\"{StartState}\" -> \"{EndState}\" [label=\"{Helper.ReplaceSpecialSymbol(Symbol)}\"]";
 
             return $"{Environment.NewLine}\t\"{StartState}\" -> \"{EndState}\" [label=\"{Helper.ReplaceSpecialSymbol(Symbol)} [{Helper.ReplaceSpecialSymbol(StackPop)}/{Helper.ReplaceSpecialSymbol(StackPush)}]\"]";
+        }
+
+        public string ToText()
+        {
+            if (StackPop == '_' && StackPush == '_')
+                return $"{Environment.NewLine}{StartState},{Symbol} --> {EndState}";
+
+            return $"{Environment.NewLine}{StartState},{Symbol} [{StackPop},{StackPush}] --> {EndState}";
         }
     }
 }

@@ -7,24 +7,24 @@ namespace Automatax.Models
     public class Automaton : IAutomaton
     {
 
-        public Automaton(List<char> alphabet, List<string> states, List<string> finalStates, List<Transition> transitions)
+        public Automaton(List<char> alphabet, List<char> stackAlphabet, List<string> states, List<string> finalStates, List<Transition> transitions)
         {
             Alphabet = alphabet;
+            StackAlphabet = stackAlphabet;
             States = states;
             StartState = States.First();
             FinalStates = finalStates;
             Transitions = transitions;
-            Stack = new Stack<char>();
         }
 
         public List<char> Alphabet { get; }
+        public List<char> StackAlphabet { get; }
         public List<string> States { get; }
         public string StartState { get; }
         public List<string> FinalStates { get; }
         public List<Transition> Transitions { get; }
-        public Stack<char> Stack { get; }
 
-        public override string ToString()
+        public string ToGraph()
         {
             string states = $"{Environment.NewLine}\t\"\" [shape=none]";
 
@@ -40,7 +40,7 @@ namespace Automatax.Models
             string transitions = $"{Environment.NewLine}\t\"\" -> \"{StartState}\"";
 
             foreach (var transition in Transitions)
-                transitions += transition;
+                transitions += transition.ToGraph();
 
             string result = $"digraph automaton {{{Environment.NewLine}\trankdir=LR;{states}{Environment.NewLine}{transitions}{Environment.NewLine}}}";
             return result;
@@ -62,51 +62,59 @@ namespace Automatax.Models
 
         public bool Accepts(string word)
         {
-            var count = 0;
-            var result = Accepts(StartState, word, ref count);
-
-            Stack.Clear();
-
-            return result;
+            return Accepts(StartState, word, new Stack<char>());
         }
 
-        private bool Accepts(string currentState, string input, ref int count)
+        private bool Accepts(string currentState, string input, Stack<char> currentStack)
         {
-            count++;
-
-            if (count > 50)
-                throw new Exception("Exceeded 50 steps limit.");
+            if (input == "" && FinalStates.Contains(currentState) && currentStack.Count == 0)
+                return true;
 
             var transitions = Transitions.FindAll(t =>
                 t.StartState == currentState && (
-                (input != "" && t.Symbol == input[0] && Stack.Count > 0 && t.StackPop == Stack.Peek())
+                (input != "" && t.Symbol == input[0] && currentStack.Count > 0 && t.StackPop == currentStack.Peek())
                 || (input != "" && t.Symbol == input[0] && t.StackPop == '_')
-                || (t.Symbol == '_' && Stack.Count > 0 && t.StackPop == Stack.Peek())
+                || (t.Symbol == '_' && currentStack.Count > 0 && t.StackPop == currentStack.Peek())
                 || (t.Symbol == '_' && t.StackPop == '_'))
             );
 
             foreach (var transition in transitions)
             {
+                var stack = new Stack<char>(currentStack.Reverse());
+
                 if (transition.StackPop != '_')
-                    Stack.Pop();
+                    stack.Pop();
                 if (transition.StackPush != '_')
-                    Stack.Push(transition.StackPush);
+                    stack.Push(transition.StackPush);
                 if (transition.Symbol == '_')
                 {
-                    if (Accepts(transition.EndState, input, ref count))
+                    if (Accepts(transition.EndState, input, stack))
                         return true;
                 }
                 else
                 {
-                    if (Accepts(transition.EndState, input.Substring(1), ref count))
+                    if (Accepts(transition.EndState, input.Substring(1), stack))
                         return true;
                 }
             }
 
-            if (input == "" && FinalStates.Contains(currentState) && Stack.Count == 0)
-                return true;
-
             return false;
+        }
+
+        public string ToText()
+        {
+            string transitions = null;
+
+            foreach (var transition in Transitions)
+                transitions += transition.ToText();
+
+            return $"alphabet: {string.Join(",", Alphabet)}"
+                + ((StackAlphabet.Count > 0) ? $"{Environment.NewLine}stack: {string.Join(",", StackAlphabet)}" : string.Empty)
+                + $"{Environment.NewLine}states: {string.Join(",", States)}"
+                + $"{Environment.NewLine}final: {string.Join(",", FinalStates)}"
+                + $"{Environment.NewLine}transitions:"
+                + transitions
+                + $"{Environment.NewLine}end.";
         }
     }
 }
