@@ -2,7 +2,7 @@ grammar:
 S:a B
 S:u U
 B:b B c
-B:_ 
+B:_
 U:W W
 W:w w
 end.

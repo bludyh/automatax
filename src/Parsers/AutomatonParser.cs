@@ -10,11 +10,11 @@ namespace Automatax.Parsers
     {
         public IAutomaton Parse(StreamReader reader)
         {
-            List<char> alphabet = new List<char>();
-            List<char> stackAlphabet = new List<char>();
-            List<string> states = new List<string>();
-            List<string> finalStates = new List<string>();
-            List<Transition> transitions = new List<Transition>();
+            var alphabet = new List<char>();
+            var stackAlphabet = new List<string>();
+            var states = new List<string>();
+            var finalStates = new List<string>();
+            var transitions = new List<Transition>();
 
             string line;
             string fileName = (reader.BaseStream as FileStream).Name;
@@ -34,7 +34,7 @@ namespace Automatax.Parsers
 
                 if (line.Contains("stack:"))
                 {
-                    stackAlphabet = line.Split(':')[1].ToCharArray().Where(c => c != ' ' && c != ',').ToList();
+                    stackAlphabet = line.Split(':')[1].Split(',').Select(s => s.Trim()).ToList();
                     continue;
                 }
 
@@ -42,7 +42,7 @@ namespace Automatax.Parsers
                 {
                     states = line.Split(':')[1].Split(',').Select(s => s.Trim()).ToList();
 
-                    if (states.Any(s => char.TryParse(s, out char c) && (alphabet.Contains(c) || stackAlphabet.Contains(c))))
+                    if (states.Any(s => char.TryParse(s, out char c) && (alphabet.Contains(c) || stackAlphabet.Contains(s))))
                         throw new InvalidSyntaxException(
                             $"{fileName},{lineNumber}: " +
                             $"State name cannot be characters that are already in input or stack alphabet.");
@@ -66,8 +66,8 @@ namespace Automatax.Parsers
                 {
                     string startState;
                     char symbol;
-                    char stackPop;
-                    char stackPush;
+                    string stackPop;
+                    string stackPush;
                     string endState;
                     Transition transition;
 
@@ -97,24 +97,24 @@ namespace Automatax.Parsers
 
                         if (line.Contains('[') && line.Contains(']'))
                         {
-                            stackPop = line.Split('[')[1].Trim().ToCharArray().First();
+                            stackPop = line.Split('[')[1].Split(',')[0].Trim();
 
-                            if (stackPop != '_' && !stackAlphabet.Contains(stackPop))
+                            if (stackPop != "_" && stackPop != "$" && !stackAlphabet.Contains(stackPop))
                                 throw new InvalidSyntaxException(
                                     $"{fileName},{lineNumber}: " +
                                     $"Pop symbol must be a valid character from stack alphabet.");
 
-                            stackPush = line.Split(']')[0].Trim().ToCharArray().Last();
+                            stackPush = line.Split(']')[0].Split(',').Last().Trim();
 
-                            if (stackPush != '_' && !stackAlphabet.Contains(stackPush))
+                            if (stackPush != "_" && stackPush != "$" & !stackAlphabet.Contains(stackPush))
                                 throw new InvalidSyntaxException(
                                     $"{fileName},{lineNumber}: " +
                                     $"Push symbol must be a valid character from stack alphabet.");
                         }
                         else
                         {
-                            stackPop = '_';
-                            stackPush = '_';
+                            stackPop = "_";
+                            stackPush = "_";
                         }
 
                         endState = line.Split(new string[] { "-->" }, System.StringSplitOptions.None).Last().Trim();

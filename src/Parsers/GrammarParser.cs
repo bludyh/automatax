@@ -11,7 +11,7 @@ namespace Automatax.Parsers
     {
         public IAutomaton Parse(StreamReader reader)
         {
-            var variables = new List<char>();
+            var variables = new List<string>();
             var terminals = new List<char>();
             var rules = new List<Rule>();
 
@@ -27,8 +27,8 @@ namespace Automatax.Parsers
 
                 if (line.Contains("grammar:"))
                 {
-                    char variable;
-                    var rhs = new List<char>();
+                    string variable;
+                    var rhs = new List<string>();
                     Rule rule;
 
                     while ((line = reader.ReadLine()) != null)
@@ -41,23 +41,14 @@ namespace Automatax.Parsers
                         if (line.Contains("end."))
                             break;
 
-                        try
-                        {
-                            variable = line.Split(':')[0].ToCharArray().Where(c => char.IsUpper(c)).First();
+                        variable = line.Split(':')[0].Trim();
 
-                            if (!variables.Contains(variable))
-                                variables.Add(variable);
-                        }
-                        catch (InvalidOperationException)
-                        {
-                            throw new InvalidSyntaxException(
-                                $"{fileName},{lineNumber}: " +
-                                $"Variable must be an uppercase letter.");
-                        }
+                        if (!variables.Contains(variable))
+                            variables.Add(variable);
 
-                        rhs = line.Split(':')[1].ToCharArray().Where(c => c != ' ').ToList();
+                        rhs = line.Split(':')[1].Split(' ').Select(i => i.Trim()).ToList();
 
-                        terminals.AddRange(rhs.Where(c => c != '_' && !char.IsUpper(c) && !terminals.Contains(c)));
+                        terminals.AddRange(rhs.Where(i => char.TryParse(i, out var c) && c != '_' && !char.IsUpper(c) && !terminals.Contains(c)).Select(i => char.Parse(i)));
 
                         rule = new Rule(variable, rhs);
                         rules.Add(rule);
@@ -74,7 +65,7 @@ namespace Automatax.Parsers
             if (rules.Count == 0)
                 throw new InvalidSyntaxException($"{fileName}: Grammar must have rules.");
 
-            return new Grammar(variables, terminals, rules, variables.First());
+            return new Grammar(variables, terminals, rules);
         }
 
         public TestVector ParseTests(StreamReader reader)

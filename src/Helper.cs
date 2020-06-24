@@ -10,12 +10,12 @@
             return null;
         }
 
-        public static char ReplaceSpecialSymbol(char symbol)
+        public static string ReplaceSpecialSymbol(string input)
         {
-            if (symbol == '_')
-                symbol = 'ε';
+            if (input == "_")
+                input = "ε";
 
-            return symbol;
+            return input;
         }
     }
 }

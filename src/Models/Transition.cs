@@ -5,7 +5,7 @@ namespace Automatax.Models
     public class Transition
     {
 
-        public Transition(string startState, char symbol, char stackPop, char stackPush, string endState)
+        public Transition(string startState, char symbol, string stackPop, string stackPush, string endState)
         {
             StartState = startState;
             Symbol = symbol;
@@ -16,21 +16,21 @@ namespace Automatax.Models
 
         public string StartState { get; }
         public char Symbol { get; }
-        public char StackPop { get; }
-        public char StackPush { get; }
+        public string StackPop { get; }
+        public string StackPush { get; }
         public string EndState { get; }
 
         public string ToGraph()
         {
-            if (StackPop == '_' && StackPush == '_')
-                return $"{Environment.NewLine}\t\"{StartState}\" -> \"{EndState}\" [label=\"{Helper.ReplaceSpecialSymbol(Symbol)}\"]";
+            if (StackPop == "_" && StackPush == "_")
+                return $"{Environment.NewLine}\t\"{StartState}\" -> \"{EndState}\" [label=\"{Helper.ReplaceSpecialSymbol(Symbol.ToString())}\"]";
 
-            return $"{Environment.NewLine}\t\"{StartState}\" -> \"{EndState}\" [label=\"{Helper.ReplaceSpecialSymbol(Symbol)} [{Helper.ReplaceSpecialSymbol(StackPop)}/{Helper.ReplaceSpecialSymbol(StackPush)}]\"]";
+            return $"{Environment.NewLine}\t\"{StartState}\" -> \"{EndState}\" [label=\"{Helper.ReplaceSpecialSymbol(Symbol.ToString())} [{Helper.ReplaceSpecialSymbol(StackPop)}/{Helper.ReplaceSpecialSymbol(StackPush)}]\"]";
         }
 
         public string ToText()
         {
-            if (StackPop == '_' && StackPush == '_')
+            if (StackPop == "_" && StackPush == "_")
                 return $"{Environment.NewLine}{StartState},{Symbol} --> {EndState}";
 
             return $"{Environment.NewLine}{StartState},{Symbol} [{StackPop},{StackPush}] --> {EndState}";

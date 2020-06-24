@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Automatax.Models
@@ -8,33 +9,33 @@ namespace Automatax.Models
 
         private Automaton _pda;
 
-        public Grammar(List<char> variables, List<char> terminals, List<Rule> rules, char startVariable)
+        public Grammar(List<string> variables, List<char> terminals, List<Rule> rules)
         {
             Variables = variables;
             Terminals = terminals;
             Rules = rules;
-            StartVariable = startVariable;
+            StartVariable = Variables.First();
         }
 
-        public List<char> Variables { get; }
+        public List<string> Variables { get; }
         public List<char> Terminals { get; }
         public List<Rule> Rules { get; }
-        public char StartVariable { get; }
+        public string StartVariable { get; }
 
         public Automaton ToPda()
         {
             var alphabet = new List<char>(Terminals);
-            var stackAlphabet = new List<char>(Variables.Concat(Terminals));
+            var stackAlphabet = new List<string>(Variables.Concat(Terminals.Select(c => c.ToString())));
             var states = new List<string> { "q0", "q1", "q2", "q3" };
             var finalStates = new List<string> { "q3" };
             var transitions = new List<Transition> { 
-                new Transition("q0", '_', '_', '$', "q1"),
-                new Transition("q1", '_', '_', StartVariable, "q2"),
-                new Transition("q2", '_', '$', '_', "q3")
+                new Transition("q0", '_', "_", "$", "q1"),
+                new Transition("q1", '_', "_", StartVariable, "q2"),
+                new Transition("q2", '_', "$", "_", "q3")
             };
 
             foreach (var terminal in Terminals)
-                transitions.Add(new Transition("q2", terminal, terminal, '_', "q2"));
+                transitions.Add(new Transition("q2", terminal, terminal.ToString(), "_", "q2"));
 
             var index = 4;
 
@@ -58,13 +59,13 @@ namespace Automatax.Models
                         endState = $"q{index++}";
 
                         states.Add(endState);
-                        transitions.Add(new Transition(startState, '_', '_', rule.RightHandSide[i], endState));
+                        transitions.Add(new Transition(startState, '_', "_", rule.RightHandSide[i], endState));
                     }
 
                     startState = endState;
                     endState = "q2";
 
-                    transitions.Add(new Transition(startState, '_', '_', rule.RightHandSide.First(), endState));
+                    transitions.Add(new Transition(startState, '_', "_", rule.RightHandSide.First(), endState));
                 }
             }
 
@@ -86,7 +87,14 @@ namespace Automatax.Models
 
         public string ToText()
         {
-            throw new System.NotImplementedException();
+            string rules = null;
+
+            foreach (var rule in Rules)
+                rules += rule.ToText();
+
+            return $"grammar:"
+                + rules
+                + $"{Environment.NewLine}end.";
         }
 
         public string ToGraph()

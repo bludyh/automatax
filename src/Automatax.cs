@@ -132,8 +132,8 @@ namespace Automatax
             // PDA & CFG Conversions
             if (automaton is Automaton pda)
             {
-                //File.WriteAllText("cfg.txt", pda.ToGrammar().ToText());
-                //cfgTextBox.Text = Directory.GetCurrentDirectory() + 
+                File.WriteAllText("cfg.txt", pda.ToGrammar().ToText());
+                cfgTextBox.Text = Directory.GetCurrentDirectory() + "\\cfg.txt";
             }
             else if (automaton is Grammar cfg)
             {

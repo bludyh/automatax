@@ -1,16 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Automatax.Models
 {
     public class Rule
     {
-        public Rule(char variable, List<char> rhs)
+        public Rule(string variable, List<string> rhs)
         {
             Variable = variable;
             RightHandSide = rhs;
         }
 
-        public char Variable { get; }
-        public List<char> RightHandSide { get; }
+        public string Variable { get; }
+        public List<string> RightHandSide { get; }
+
+        public string ToText()
+        {
+            return $"{Environment.NewLine}{Variable}:{string.Join(" ", RightHandSide)}";
+        }
     }
 }
