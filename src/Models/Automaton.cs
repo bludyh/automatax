@@ -24,34 +24,12 @@ namespace Automatax.Models
         public List<string> FinalStates { get; }
         public List<Transition> Transitions { get; }
 
-        public string ToGraph()
-        {
-            string states = $"{Environment.NewLine}\t\"\" [shape=none]";
-
-            foreach (var state in States)
-            {
-                states += $"{Environment.NewLine}\t\"{state}\"";
-                if (FinalStates.Contains(state))
-                    states += $" [shape=doublecircle]";
-                else
-                    states += $" [shape=circle]";
-            }
-
-            string transitions = $"{Environment.NewLine}\t\"\" -> \"{StartState}\"";
-
-            foreach (var transition in Transitions)
-                transitions += transition.ToGraph();
-
-            string result = $"digraph automaton {{{Environment.NewLine}\trankdir=LR;{states}{Environment.NewLine}{transitions}{Environment.NewLine}}}";
-            return result;
-        }
-
         public bool IsDfa()
         {
             if (Transitions.Exists(t => t.Symbol == '_'))
                 return false;
 
-            foreach(var state in States)
+            foreach (var state in States)
                 foreach (var symbol in Alphabet)
                     if (!Transitions.Exists(t => t.StartState == state && t.Symbol == symbol)
                         || Transitions.Where(t => t.StartState == state && t.Symbol == symbol).Count() > 1)
@@ -62,59 +40,56 @@ namespace Automatax.Models
 
         public bool Accepts(string word)
         {
-            return Accepts(StartState, word, new Stack<string>());
+            var stateConfigurations = new List<StateConfiguration> { new StateConfiguration(word, StartState, new Stack<string>()) };
+            var count = 0;
+
+            return Bfs(stateConfigurations, ref count);
         }
 
-        private bool Accepts(string currentState, string input, Stack<string> currentStack)
+        private bool Bfs(List<StateConfiguration> stateConfigurations, ref int count)
         {
-            if (input == "" && FinalStates.Contains(currentState) && currentStack.Count == 0)
+            if (++count > 50)
+                throw new Exception("Cannot determine acceptance. Reached recursion limit of 50 steps.");
+
+            if (stateConfigurations.Any(sc => sc.CurrentInput == string.Empty && FinalStates.Contains(sc.State) && sc.Stack.Count == 0))
                 return true;
 
-            var transitions = Transitions.FindAll(t =>
-                t.StartState == currentState && (
-                (input != "" && t.Symbol == input[0] && currentStack.Count > 0 && t.StackPop == currentStack.Peek())
-                || (input != "" && t.Symbol == input[0] && t.StackPop == "_")
-                || (t.Symbol == '_' && currentStack.Count > 0 && t.StackPop == currentStack.Peek())
-                || (t.Symbol == '_' && t.StackPop == "_"))
-            );
+            var nextStateConfigurations = new List<StateConfiguration>();
 
-            foreach (var transition in transitions)
+            foreach (var config in stateConfigurations)
             {
-                var stack = new Stack<string>(currentStack.Reverse());
+                var transitions = Transitions.FindAll(t =>
+                    t.StartState == config.State && (
+                    (config.CurrentInput != string.Empty && t.Symbol == config.CurrentInput[0] && config.Stack.Count > 0 && t.StackPop == config.Stack.Peek())
+                    || (config.CurrentInput != string.Empty && t.Symbol == config.CurrentInput[0] && t.StackPop == "_")
+                    || (t.Symbol == '_' && config.Stack.Count > 0 && t.StackPop == config.Stack.Peek())
+                    || (t.Symbol == '_' && t.StackPop == "_"))
+                );
 
-                if (transition.StackPop != "_")
-                    stack.Pop();
-                if (transition.StackPush != "_")
-                    stack.Push(transition.StackPush);
-                if (transition.Symbol == '_')
+                foreach (var transition in transitions)
                 {
-                    if (Accepts(transition.EndState, input, stack))
-                        return true;
-                }
-                else
-                {
-                    if (Accepts(transition.EndState, input.Substring(1), stack))
-                        return true;
+                    string input = null;
+                    var stack = new Stack<string>(config.Stack.Reverse());
+
+                    if (transition.StackPop != "_")
+                        stack.Pop();
+
+                    if (transition.StackPush != "_")
+                        stack.Push(transition.StackPush);
+
+                    if (transition.Symbol == '_')
+                        input = config.CurrentInput;
+                    else
+                        input = config.CurrentInput.Substring(1);
+
+                    nextStateConfigurations.Add(new StateConfiguration(input, transition.EndState, stack));
                 }
             }
 
-            return false;
-        }
+            if (nextStateConfigurations.Count == 0)
+                return false;
 
-        public string ToText()
-        {
-            string transitions = null;
-
-            foreach (var transition in Transitions)
-                transitions += transition.ToText();
-
-            return $"alphabet: {string.Join(",", Alphabet)}"
-                + ((StackAlphabet.Count > 0) ? $"{Environment.NewLine}stack: {string.Join(",", StackAlphabet)}" : string.Empty)
-                + $"{Environment.NewLine}states: {string.Join(",", States)}"
-                + $"{Environment.NewLine}final: {string.Join(",", FinalStates)}"
-                + $"{Environment.NewLine}transitions:"
-                + transitions
-                + $"{Environment.NewLine}end.";
+            return Bfs(nextStateConfigurations, ref count);
         }
 
         public Grammar ToGrammar()
@@ -226,5 +201,44 @@ namespace Automatax.Models
 
             return new Grammar(variables, terminals, rules);
         }
+
+        public string ToGraph()
+        {
+            string states = $"{Environment.NewLine}\t\"\" [shape=none]";
+
+            foreach (var state in States)
+            {
+                states += $"{Environment.NewLine}\t\"{state}\"";
+                if (FinalStates.Contains(state))
+                    states += $" [shape=doublecircle]";
+                else
+                    states += $" [shape=circle]";
+            }
+
+            string transitions = $"{Environment.NewLine}\t\"\" -> \"{StartState}\"";
+
+            foreach (var transition in Transitions)
+                transitions += transition.ToGraph();
+
+            string result = $"digraph automaton {{{Environment.NewLine}\trankdir=LR;{states}{Environment.NewLine}{transitions}{Environment.NewLine}}}";
+            return result;
+        }
+
+        public string ToText()
+        {
+            string transitions = null;
+
+            foreach (var transition in Transitions)
+                transitions += transition.ToText();
+
+            return $"alphabet: {string.Join(",", Alphabet)}"
+                + ((StackAlphabet.Count > 0) ? $"{Environment.NewLine}stack: {string.Join(",", StackAlphabet)}" : string.Empty)
+                + $"{Environment.NewLine}states: {string.Join(",", States)}"
+                + $"{Environment.NewLine}final: {string.Join(",", FinalStates)}"
+                + $"{Environment.NewLine}transitions:"
+                + transitions
+                + $"{Environment.NewLine}end.";
+        }
+
     }
 }

@@ -1,0 +1,30 @@
+grammar:
+S : AG
+AG : d BF d
+BF : d CE d
+CE : a DD b
+DD : _
+CE : d DD d
+AG : AC CG
+AC : a BB b
+BB : _
+CG : CE EG
+EG : a FF b
+FF : _
+AG : AE EG
+AE : c BD b
+BD : c DD c
+AE : AC CE
+end.
+
+finite: n
+dfa: n
+
+words:
+,n
+cccba,n
+cccbab,y
+ababab,y
+dddddd,y
+end.
+

@@ -1,0 +1,36 @@
+# ... (tbd.)
+
+alphabet: abcd
+stack: U,V,W,X,Y,Z
+states: A,B,C,D,E,F,G
+final: G
+transitions:
+A,a [_,X] --> B
+B,b [X,_] --> C
+C,a [_,Y] --> D
+D,b [Y,_] --> E
+E,a [_,Z] --> F
+F,b [Z,_] --> G
+
+A,c [_,Y] --> B
+B,c [_,Z] --> D
+D,c [Z,_] --> D
+
+A,d [_,U] --> B
+B,d [_,V] --> C
+C,d [_,W] --> D
+D,d [W,_] --> E
+E,d [V,_] --> F
+F,d [U,_] --> G
+end.
+
+finite: n
+dfa: n
+
+words:
+,n
+cccba,n
+cccbab,y
+ababab,y
+dddddd,y
+end.

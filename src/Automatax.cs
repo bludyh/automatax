@@ -162,6 +162,12 @@ namespace Automatax
             resultsGridView.ClearSelection();
         }
 
+        private void showInputFileButton_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(inputTextBox.Text))
+                Process.Start(inputTextBox.Text);
+        }
+
         private void showPdaFileButton_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(pdaTextBox.Text))
@@ -173,5 +179,6 @@ namespace Automatax
             if (!string.IsNullOrEmpty(cfgTextBox.Text))
                 Process.Start(cfgTextBox.Text);
         }
+
     }
 }

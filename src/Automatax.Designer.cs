@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.clearButton = new System.Windows.Forms.Button();
             this.message1 = new System.Windows.Forms.Label();
@@ -52,6 +52,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.pdaTextBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.showInputFileButton = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.resultsGridView)).BeginInit();
@@ -60,6 +61,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.showInputFileButton);
             this.groupBox1.Controls.Add(this.clearButton);
             this.groupBox1.Controls.Add(this.message1);
             this.groupBox1.Controls.Add(this.readButton);
@@ -75,9 +77,9 @@
             // 
             // clearButton
             // 
-            this.clearButton.Location = new System.Drawing.Point(484, 45);
+            this.clearButton.Location = new System.Drawing.Point(489, 45);
             this.clearButton.Name = "clearButton";
-            this.clearButton.Size = new System.Drawing.Size(75, 23);
+            this.clearButton.Size = new System.Drawing.Size(70, 23);
             this.clearButton.TabIndex = 7;
             this.clearButton.Text = "Clear";
             this.clearButton.UseVisualStyleBackColor = true;
@@ -93,9 +95,9 @@
             // 
             // readButton
             // 
-            this.readButton.Location = new System.Drawing.Point(263, 45);
+            this.readButton.Location = new System.Drawing.Point(199, 45);
             this.readButton.Name = "readButton";
-            this.readButton.Size = new System.Drawing.Size(215, 23);
+            this.readButton.Size = new System.Drawing.Size(150, 23);
             this.readButton.TabIndex = 2;
             this.readButton.Text = "Read";
             this.readButton.UseVisualStyleBackColor = true;
@@ -105,7 +107,7 @@
             // 
             this.loadButton.Location = new System.Drawing.Point(43, 45);
             this.loadButton.Name = "loadButton";
-            this.loadButton.Size = new System.Drawing.Size(215, 23);
+            this.loadButton.Size = new System.Drawing.Size(150, 23);
             this.loadButton.TabIndex = 2;
             this.loadButton.Text = "Browse File";
             this.loadButton.UseVisualStyleBackColor = true;
@@ -181,8 +183,8 @@
             // Column3
             // 
             this.Column3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.Red;
-            this.Column3.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.Red;
+            this.Column3.DefaultCellStyle = dataGridViewCellStyle1;
             this.Column3.HeaderText = "";
             this.Column3.Name = "Column3";
             this.Column3.ReadOnly = true;
@@ -281,6 +283,16 @@
             this.label4.TabIndex = 0;
             this.label4.Text = "PDA";
             // 
+            // showInputFileButton
+            // 
+            this.showInputFileButton.Location = new System.Drawing.Point(355, 45);
+            this.showInputFileButton.Name = "showInputFileButton";
+            this.showInputFileButton.Size = new System.Drawing.Size(128, 23);
+            this.showInputFileButton.TabIndex = 6;
+            this.showInputFileButton.Text = "Show File";
+            this.showInputFileButton.UseVisualStyleBackColor = true;
+            this.showInputFileButton.Click += new System.EventHandler(this.showInputFileButton_Click);
+            // 
             // Automatax
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -326,6 +338,7 @@
         private System.Windows.Forms.Button showPdaFileButton;
         private System.Windows.Forms.TextBox cfgTextBox;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button showInputFileButton;
     }
 }
 

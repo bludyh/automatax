@@ -46,7 +46,7 @@ namespace Automatax.Parsers
                         if (!variables.Contains(variable))
                             variables.Add(variable);
 
-                        rhs = line.Split(':')[1].Split(' ').Select(i => i.Trim()).ToList();
+                        rhs = line.Split(':')[1].Split(' ').Where(i => i != string.Empty).Select(i => i.Trim()).ToList();
 
                         terminals.AddRange(rhs.Where(i => char.TryParse(i, out var c) && c != '_' && !char.IsUpper(c) && !terminals.Contains(c)).Select(i => char.Parse(i)));
 
