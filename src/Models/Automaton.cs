@@ -7,21 +7,21 @@ namespace Automatax.Models
     public class Automaton : IAutomaton
     {
 
-        public Automaton(List<char> alphabet, List<string> stackAlphabet, List<string> states, List<string> finalStates, List<Transition> transitions)
+        public Automaton(HashSet<char> alphabet, HashSet<string> stackAlphabet, HashSet<string> states, string startState, HashSet<string> finalStates, List<Transition> transitions)
         {
             Alphabet = alphabet;
             StackAlphabet = stackAlphabet;
             States = states;
-            StartState = States.First();
+            StartState = startState;
             FinalStates = finalStates;
             Transitions = transitions;
         }
 
-        public List<char> Alphabet { get; }
-        public List<string> StackAlphabet { get; }
-        public List<string> States { get; }
+        public HashSet<char> Alphabet { get; }
+        public HashSet<string> StackAlphabet { get; }
+        public HashSet<string> States { get; }
         public string StartState { get; }
-        public List<string> FinalStates { get; }
+        public HashSet<string> FinalStates { get; }
         public List<Transition> Transitions { get; }
 
         public bool IsDfa()
@@ -31,8 +31,8 @@ namespace Automatax.Models
 
             foreach (var state in States)
                 foreach (var symbol in Alphabet)
-                    if (!Transitions.Exists(t => t.StartState == state && t.Symbol == symbol)
-                        || Transitions.Where(t => t.StartState == state && t.Symbol == symbol).Count() > 1)
+                    if (!Transitions.Exists(t => t.FromState == state && t.Symbol == symbol)
+                        || Transitions.Where(t => t.FromState == state && t.Symbol == symbol).Count() > 1)
                         return false;
 
             return true;
@@ -58,8 +58,8 @@ namespace Automatax.Models
 
             foreach (var config in stateConfigurations)
             {
-                var transitions = Transitions.FindAll(t =>
-                    t.StartState == config.State && (
+                var transitions = Transitions.Where(t =>
+                    t.FromState == config.State && (
                     (config.CurrentInput != string.Empty && t.Symbol == config.CurrentInput[0] && config.Stack.Count > 0 && t.StackPop == config.Stack.Peek())
                     || (config.CurrentInput != string.Empty && t.Symbol == config.CurrentInput[0] && t.StackPop == "_")
                     || (t.Symbol == '_' && config.Stack.Count > 0 && t.StackPop == config.Stack.Peek())
@@ -82,7 +82,7 @@ namespace Automatax.Models
                     else
                         input = config.CurrentInput.Substring(1);
 
-                    nextStateConfigurations.Add(new StateConfiguration(input, transition.EndState, stack));
+                    nextStateConfigurations.Add(new StateConfiguration(input, transition.ToState, stack));
                 }
             }
 
@@ -90,116 +90,6 @@ namespace Automatax.Models
                 return false;
 
             return Bfs(nextStateConfigurations, ref count);
-        }
-
-        public Grammar ToGrammar()
-        {
-            var variables = new List<string>();
-            var terminals = new List<char>(Alphabet);
-            var rules = new List<Rule>();
-
-            // Construct the temp pda satisfies the 3 conditions
-            var alphabet = new List<char>(Alphabet);
-            var stackAlphabet = new List<string>(StackAlphabet);
-            var states = new List<string>(States);
-            var finalStates = new List<string>();
-            var transitions = new List<Transition>();
-            var index = 0;
-
-            // Single accepting state
-            states.Add("qa");
-            finalStates.Add("qa");
-
-            // Empty stack on accepting
-            states.Insert(0, "qs");
-            transitions.Add(new Transition("qs", '_', "_", "$", StartState));
-
-            states.Add("qt");
-            foreach (var state in FinalStates)
-            {
-                transitions.Add(new Transition(state, '_', "_", "a", $"q{index++}'"));
-                transitions.Add(new Transition($"q{index - 1}'", '_', "a", "_", "qt"));
-            }
-
-            foreach (var symbol in stackAlphabet)
-                transitions.Add(new Transition("qt", '_', symbol, "_", "qt"));
-
-            transitions.Add(new Transition("qt", '_', "$", "_", "qa"));
-
-            // Each transition is a push or pop but not both
-            foreach (var transition in Transitions)
-            {
-                if (transition.StackPop != "_" && transition.StackPush != "_")
-                {
-                    transitions.Add(new Transition(transition.StartState, transition.Symbol, transition.StackPop, "_", $"q{index++}'"));
-                    transitions.Add(new Transition($"q{index - 1}'", '_', "_", transition.StackPush, transition.EndState));
-                }
-                else if (transition.StackPop == "_" && transition.StackPush == "_")
-                {
-                    transitions.Add(new Transition(transition.StartState, transition.Symbol, "_", "a", $"q{index++}'"));
-                    transitions.Add(new Transition($"q{index - 1}'", '_', "a", "_", transition.EndState));
-                }
-                else
-                    transitions.Add(transition);
-            }
-
-            var sigmaEpsilon = new List<char>(alphabet) { '_' };
-
-            // First Rule
-            foreach (var p in states)
-                foreach (var q in states)
-                    foreach (var r in states)
-                        foreach (var s in states)
-                            foreach (var alpha in sigmaEpsilon)
-                                foreach (var beta in sigmaEpsilon)
-                                    foreach (var symbol in stackAlphabet)
-                                    {
-                                        if (transitions.Any(t => t.StartState == p && t.Symbol == alpha && t.StackPop == "_" && t.StackPush == symbol && t.EndState == r)
-                                            && transitions.Any(t => t.StartState == s && t.Symbol == beta && t.StackPop == symbol && t.StackPush == "_" && t.EndState == q))
-                                        {
-                                            var a_pq = $"A_{p}{q}";
-                                            var a_rs = $"A_{r}{s}";
-
-                                            if (!variables.Contains(a_pq))
-                                                variables.Add(a_pq);
-                                            if (!variables.Contains(a_rs))
-                                                variables.Add(a_rs);
-
-                                            rules.Add(new Rule(a_pq, new List<string> { alpha.ToString(), a_rs, beta.ToString() }));
-                                        }
-                                    }
-
-            // Second Rule
-            foreach (var p in states)
-                foreach (var q in states)
-                    foreach (var r in states)
-                    {
-                        var a_pq = $"A_{p}{q}";
-                        var a_pr = $"A_{p}{r}";
-                        var a_rq = $"A_{r}{q}";
-
-                        if (!variables.Contains(a_pq))
-                            variables.Add(a_pq);
-                        if (!variables.Contains(a_pr))
-                            variables.Add(a_pr);
-                        if (!variables.Contains(a_rq))
-                            variables.Add(a_rq);
-
-                        rules.Add(new Rule(a_pq, new List<string> { a_pr, a_rq }));
-                    }
-
-            // Third Rule
-            foreach (var p in states)
-            {
-                var a_pp = $"A_{p}{p}";
-
-                if (!variables.Contains(a_pp))
-                    variables.Add(a_pp);
-
-                rules.Add(new Rule(a_pp, new List<string> { "_" }));
-            }
-
-            return new Grammar(variables, terminals, rules);
         }
 
         public string ToGraph()
@@ -238,6 +128,128 @@ namespace Automatax.Models
                 + $"{Environment.NewLine}transitions:"
                 + transitions
                 + $"{Environment.NewLine}end.";
+        }
+
+        public Grammar ToGrammar()
+        {
+            var startVariable = "S";
+            var variables = new HashSet<string> { startVariable };
+            var terminals = new HashSet<char>(Alphabet);
+            var rules = new List<Rule> { new Rule(startVariable, new List<string> { $"A_{States.First()}{States.Last()}" }) };
+
+            var pda = NormalizePda();
+
+            var sigmaEpsilon = new HashSet<char>(pda.Alphabet) { '_' };
+
+            // First Rule
+            foreach (var p in pda.States)
+                foreach (var q in pda.States)
+                    foreach (var r in pda.States)
+                        foreach (var s in pda.States)
+                            foreach (var alpha in sigmaEpsilon)
+                                foreach (var beta in sigmaEpsilon)
+                                    foreach (var symbol in pda.StackAlphabet)
+                                    {
+                                        if (pda.Transitions.Any(t => t.FromState == p && t.Symbol == alpha && t.StackPop == "_" && t.StackPush == symbol && t.ToState == r)
+                                            && pda.Transitions.Any(t => t.FromState == s && t.Symbol == beta && t.StackPop == symbol && t.StackPush == "_" && t.ToState == q))
+                                        {
+                                            var a_pq = $"A_{p}{q}";
+                                            variables.Add(a_pq);
+
+                                            var a_rs = $"A_{r}{s}";
+                                            variables.Add(a_rs);
+
+                                            rules.Add(new Rule(a_pq, new List<string> { alpha.ToString(), a_rs, beta.ToString() }.Where(i => i != "_").ToList()));
+                                        }
+                                    }
+
+            // Second Rule
+            foreach (var p in pda.States)
+                foreach (var q in pda.States)
+                    foreach (var r in pda.States)
+                    {
+                        if (p != q && q != r && r != p)
+                        {
+
+                            var a_pq = $"A_{p}{q}";
+                            variables.Add(a_pq);
+
+                            var a_pr = $"A_{p}{r}";
+                            variables.Add(a_pr);
+
+                            var a_rq = $"A_{r}{q}";
+                            variables.Add(a_rq);
+
+                            rules.Add(new Rule(a_pq, new List<string> { a_pr, a_rq }));
+                        }
+                    }
+
+            // Third Rule
+            foreach (var p in pda.States)
+            {
+                var a_pp = $"A_{p}{p}";
+
+                variables.Add(a_pp);
+
+                rules.Add(new Rule(a_pp, new List<string> { "_" }));
+            }
+
+            var grammar = new Grammar(variables, terminals, rules, startVariable);
+
+            // Simplify
+            grammar.Simplify();
+
+            return grammar;
+        }
+
+        private Automaton NormalizePda()
+        {
+            var alphabet = new HashSet<char>(Alphabet);
+            var stackAlphabet = new HashSet<string>(StackAlphabet);
+            var states = new HashSet<string>(States);
+            var finalStates = new HashSet<string>();
+            var transitions = new List<Transition>();
+            var index = 0;
+
+            // Single accepting state
+            states.Add("qa");
+            finalStates.Add("qa");
+
+            // Empty stack on accepting
+            string startState = "qs";
+            states.Add(startState);
+            transitions.Add(new Transition("qs", '_', "_", "$", StartState));
+
+            states.Add("qt");
+            foreach (var state in FinalStates)
+            {
+                transitions.Add(new Transition(state, '_', "_", "a", $"q{index++}'"));
+                transitions.Add(new Transition($"q{index - 1}'", '_', "a", "_", "qt"));
+            }
+
+            foreach (var symbol in stackAlphabet)
+                transitions.Add(new Transition("qt", '_', symbol, "_", "qt"));
+
+            transitions.Add(new Transition("qt", '_', "$", "_", "qa"));
+
+            // Each transition is a push or pop but not both
+            foreach (var transition in Transitions)
+            {
+                if (transition.StackPop != "_" && transition.StackPush != "_")
+                {
+                    transitions.Add(new Transition(transition.FromState, transition.Symbol, transition.StackPop, "_", $"q{index++}'"));
+                    transitions.Add(new Transition($"q{index - 1}'", '_', "_", transition.StackPush, transition.ToState));
+                }
+                else if (transition.StackPop == "_" && transition.StackPush == "_")
+                {
+                    transitions.Add(new Transition(transition.FromState, transition.Symbol, "_", "a", $"q{index++}'"));
+                    transitions.Add(new Transition($"q{index - 1}'", '_', "a", "_", transition.ToState));
+                }
+                else
+                    transitions.Add(transition);
+            }
+
+            return new Automaton(alphabet, stackAlphabet, states, startState, finalStates, transitions);
         }
 
     }

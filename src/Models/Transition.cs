@@ -5,35 +5,35 @@ namespace Automatax.Models
     public class Transition
     {
 
-        public Transition(string startState, char symbol, string stackPop, string stackPush, string endState)
+        public Transition(string fromState, char symbol, string stackPop, string stackPush, string toState)
         {
-            StartState = startState;
+            FromState = fromState;
             Symbol = symbol;
             StackPop = stackPop;
             StackPush = stackPush;
-            EndState = endState;
+            ToState = toState;
         }
 
-        public string StartState { get; }
+        public string FromState { get; }
         public char Symbol { get; }
         public string StackPop { get; }
         public string StackPush { get; }
-        public string EndState { get; }
+        public string ToState { get; }
 
         public string ToGraph()
         {
             if (StackPop == "_" && StackPush == "_")
-                return $"{Environment.NewLine}\t\"{StartState}\" -> \"{EndState}\" [label=\"{Helper.ReplaceSpecialSymbol(Symbol.ToString())}\"]";
+                return $"{Environment.NewLine}\t\"{FromState}\" -> \"{ToState}\" [label=\"{Helper.ReplaceSpecialSymbol(Symbol.ToString())}\"]";
 
-            return $"{Environment.NewLine}\t\"{StartState}\" -> \"{EndState}\" [label=\"{Helper.ReplaceSpecialSymbol(Symbol.ToString())} [{Helper.ReplaceSpecialSymbol(StackPop)}/{Helper.ReplaceSpecialSymbol(StackPush)}]\"]";
+            return $"{Environment.NewLine}\t\"{FromState}\" -> \"{ToState}\" [label=\"{Helper.ReplaceSpecialSymbol(Symbol.ToString())} [{Helper.ReplaceSpecialSymbol(StackPop)}/{Helper.ReplaceSpecialSymbol(StackPush)}]\"]";
         }
 
         public string ToText()
         {
             if (StackPop == "_" && StackPush == "_")
-                return $"{Environment.NewLine}{StartState},{Symbol} --> {EndState}";
+                return $"{Environment.NewLine}{FromState},{Symbol} --> {ToState}";
 
-            return $"{Environment.NewLine}{StartState},{Symbol} [{StackPop},{StackPush}] --> {EndState}";
+            return $"{Environment.NewLine}{FromState},{Symbol} [{StackPop},{StackPush}] --> {ToState}";
         }
     }
 }

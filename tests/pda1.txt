@@ -2,18 +2,18 @@
 
 alphabet: abc
 
-stack: x
+stack: X
 
-states: S,B,C
+states: A,B,C
 
 final: C
 
 transitions:
-S,a [_,x] --> S
-S,_ --> B
-B,b [_,x] --> B
+A,a [_,X] --> A
+A,_ --> B
+B,b [_,X] --> B
 B,_ --> C
-C,c [x,_] --> C
+C,c [X,_] --> C
 end.
 
 dfa: n

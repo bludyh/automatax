@@ -11,9 +11,10 @@ namespace Automatax.Parsers
     {
         public IAutomaton Parse(StreamReader reader)
         {
-            var variables = new List<string>();
-            var terminals = new List<char>();
+            var variables = new HashSet<string>();
+            var terminals = new HashSet<char>();
             var rules = new List<Rule>();
+            var startVariable = string.Empty;
 
             string line;
             string fileName = (reader.BaseStream as FileStream).Name;
@@ -42,13 +43,15 @@ namespace Automatax.Parsers
                             break;
 
                         variable = line.Split(':')[0].Trim();
+                        
+                        if (variables.Count == 0)
+                            startVariable = variable;
 
-                        if (!variables.Contains(variable))
-                            variables.Add(variable);
+                        variables.Add(variable);
 
                         rhs = line.Split(':')[1].Split(' ').Where(i => i != string.Empty).Select(i => i.Trim()).ToList();
 
-                        terminals.AddRange(rhs.Where(i => char.TryParse(i, out var c) && c != '_' && !char.IsUpper(c) && !terminals.Contains(c)).Select(i => char.Parse(i)));
+                        terminals.UnionWith(rhs.Where(i => char.TryParse(i, out var c) && c != '_' && !char.IsUpper(c)).Select(i => char.Parse(i)));
 
                         rule = new Rule(variable, rhs);
                         rules.Add(rule);
@@ -65,7 +68,12 @@ namespace Automatax.Parsers
             if (rules.Count == 0)
                 throw new InvalidSyntaxException($"{fileName}: Grammar must have rules.");
 
-            return new Grammar(variables, terminals, rules);
+            return new Grammar(variables, terminals, rules, startVariable);
+            // FOR TESTING ONLY
+            //var grammar = new Grammar(variables, terminals, rules, startVariable);
+            //grammar.Simplify();
+            //return grammar;
+            // FOR TESTING ONLY
         }
 
         public TestVector ParseTests(StreamReader reader)

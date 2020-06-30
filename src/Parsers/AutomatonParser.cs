@@ -10,10 +10,11 @@ namespace Automatax.Parsers
     {
         public IAutomaton Parse(StreamReader reader)
         {
-            var alphabet = new List<char>();
-            var stackAlphabet = new List<string>();
-            var states = new List<string>();
-            var finalStates = new List<string>();
+            var alphabet = new HashSet<char>();
+            var stackAlphabet = new HashSet<string>();
+            var states = new HashSet<string>();
+            var startState = string.Empty;
+            var finalStates = new HashSet<string>();
             var transitions = new List<Transition>();
 
             string line;
@@ -28,19 +29,20 @@ namespace Automatax.Parsers
 
                 if (line.Contains("alphabet:"))
                 {
-                    alphabet = line.Split(':')[1].ToCharArray().Where(c => c != ' ' && c != ',').ToList();
+                    alphabet.UnionWith(line.Split(':')[1].ToCharArray().Where(c => c != ' ' && c != ','));
                     continue;
                 }
 
                 if (line.Contains("stack:"))
                 {
-                    stackAlphabet = line.Split(':')[1].Split(',').Select(s => s.Trim()).ToList();
+                    stackAlphabet.UnionWith(line.Split(':')[1].Split(',').Select(s => s.Trim()));
                     continue;
                 }
 
                 if (line.Contains("states:"))
                 {
-                    states = line.Split(':')[1].Split(',').Select(s => s.Trim()).ToList();
+                    states.UnionWith(line.Split(':')[1].Split(',').Select(s => s.Trim()));
+                    startState = states.First();
 
                     if (states.Any(s => char.TryParse(s, out char c) && (alphabet.Contains(c) || stackAlphabet.Contains(s))))
                         throw new InvalidSyntaxException(
@@ -52,7 +54,7 @@ namespace Automatax.Parsers
 
                 if (line.Contains("final:"))
                 {
-                    finalStates = line.Split(':')[1].Split(',').Select(s => s.Trim()).ToList();
+                    finalStates.UnionWith(line.Split(':')[1].Split(',').Select(s => s.Trim()));
 
                     if (finalStates.Any(fs => !states.Contains(fs)))
                         throw new InvalidSyntaxException(
@@ -64,11 +66,11 @@ namespace Automatax.Parsers
 
                 if (line.Contains("transitions:"))
                 {
-                    string startState;
+                    string fromState;
                     char symbol;
                     string stackPop;
                     string stackPush;
-                    string endState;
+                    string toState;
                     Transition transition;
 
                     while ((line = reader.ReadLine()) != null)
@@ -81,9 +83,9 @@ namespace Automatax.Parsers
                         if (line.Contains("end."))
                             break;
 
-                        startState = line.Split(',')[0].Trim();
+                        fromState = line.Split(',')[0].Trim();
 
-                        if (!states.Contains(startState))
+                        if (!states.Contains(fromState))
                             throw new InvalidSyntaxException(
                                 $"{fileName},{lineNumber}: " +
                                 $"Transition must have a valid start state.");
@@ -117,14 +119,14 @@ namespace Automatax.Parsers
                             stackPush = "_";
                         }
 
-                        endState = line.Split(new string[] { "-->" }, System.StringSplitOptions.None).Last().Trim();
+                        toState = line.Split(new string[] { "-->" }, System.StringSplitOptions.None).Last().Trim();
 
-                        if (!states.Contains(endState))
+                        if (!states.Contains(toState))
                             throw new InvalidSyntaxException(
                                 $"{fileName},{lineNumber}: " +
                                 $"Transition must have a valid end state.");
 
-                        transition = new Transition(startState, symbol, stackPop, stackPush, endState);
+                        transition = new Transition(fromState, symbol, stackPop, stackPush, toState);
                         transitions.Add(transition);
                     }
 
@@ -138,7 +140,7 @@ namespace Automatax.Parsers
             if (states.Count == 0)
                 throw new InvalidSyntaxException($"{fileName}: Automaton must have a list of states.");
 
-            return new Automaton(alphabet, stackAlphabet, states, finalStates, transitions);
+            return new Automaton(alphabet, stackAlphabet, states, startState, finalStates, transitions);
         }
 
         public TestVector ParseTests(StreamReader reader)
